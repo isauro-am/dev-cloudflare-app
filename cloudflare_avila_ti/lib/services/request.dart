@@ -47,11 +47,10 @@ dynamic validarResponse(Response response) {
   if (response.statusCode >= 200 && response.statusCode <= 208) {
     var result = json.decode(response.body);
     if (result.runtimeType.toString() == 'List<dynamic>') {
-      print(result);
-
+      // print(result);
       return result[0];
     } else {
-      print(result);
+      // print(result);
       return result;
     }
   } else {
@@ -64,7 +63,7 @@ dynamic setHeaders() async {
   dynamic headers = {
     "Content-Type": "application/x-www-form-urlencoded",
   };
-  
+
   headers = {'Content-Type': 'application/json; charset=UTF-8'};
 
   /* dynamic headers = {
@@ -74,21 +73,16 @@ dynamic setHeaders() async {
 
   String bearer = '';
   try {
-    // bearer = await sotoreSecureData.getData("token");
+    bearer = await sotoreSecureData.getData("token");
     headers[HttpHeaders.authorizationHeader] = 'Bearer $bearer';
   } catch (e) {
-
-    print("can't login in cloudflare");
-
     return headers;
   }
   return headers;
 }
 
 void validSesion(dynamic response) {
+  print("Token deleted");
   response = jsonDecode(response.body);
-  if (response.containsKey("code") && response["code"] == "token_not_valid") {
-    sotoreSecureData.delData("refresh");
-    sotoreSecureData.delData("token");
-  }
+  sotoreSecureData.delData("token");
 }

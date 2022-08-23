@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:cloudflare_avila_ti/models/record_model.dart';
+
 ZonesModel zonesModelFromJson(String str) => ZonesModel.fromJson(json.decode(str));
 
 String zonesModelToJson(ZonesModel data) => json.encode(data.toJson());
@@ -14,12 +16,14 @@ class ZonesModel {
         this.name = "",
         this.status = "",
         this.nameServers = const [""],
+        this.dnsRecords = const [],
     });
 
     String id;
     String name;
     String status;
     List<dynamic> nameServers;
+    List<DnsRecordsModel> dnsRecords;
 
     factory ZonesModel.fromJson(Map<String, dynamic> json) => ZonesModel(
         id: json["id"],
