@@ -89,4 +89,6 @@ cloudflareDrawer(BuildContext context) {
 class PageRoutes {
   String get home => "/";
   String get account => "/account";
+  String get dnsRecords => "/dns_records";
+  String get newDnsRecord => "/new_dns_record";
 }

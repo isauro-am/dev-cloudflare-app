@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'drawer.dart';
+import '../drawer/drawer.dart';
 
 class CreateAccount extends StatefulWidget {
   const CreateAccount({Key? key}) : super(key: key);

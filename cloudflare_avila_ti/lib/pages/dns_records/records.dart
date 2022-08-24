@@ -1,28 +1,19 @@
-import 'package:cloudflare_avila_ti/services/secure.dart';
 import 'package:flutter/material.dart';
 
-import '../models/zone_model.dart';
-import '../requests/zones.dart';
-import '../services/services.dart';
-import 'drawer.dart';
+import '../../models/record_model.dart';
+import '../../services/services.dart';
+import '../../utils.dart';
+import '../drawer/drawer.dart';
 
-class Home extends StatefulWidget {
-  const Home({Key? key}) : super(key: key);
+class DnsRecord extends StatefulWidget {
+  const DnsRecord({Key? key}) : super(key: key);
 
   @override
-  State<Home> createState() => _HomeState();
+  State<DnsRecord> createState() => _DnsRecordState();
 }
 
-class _HomeState extends State<Home> {
-  String title = 'Cloudflare App';
-
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
+class _DnsRecordState extends State<DnsRecord> {
+  String title = activeZoneModel.name;
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +21,25 @@ class _HomeState extends State<Home> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(title),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.add),
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, pageRoutes.newDnsRecord);
+                // ScaffoldMessenger.of(context).showSnackBar(
+                //     const SnackBar(content: Text('This is a snackbar')));
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () {
+                // Navigator.pushReplacementNamed(context, pageRoutes.home );
+                Navigator.popAndPushNamed(context, pageRoutes.home);
+                // ScaffoldMessenger.of(context).showSnackBar(
+                //     const SnackBar(content: Text('This is a snackbar')));
+              },
+            ),
+          ],
         ),
         drawer: cloudflareDrawer(context),
         body: SingleChildScrollView(
@@ -40,7 +50,7 @@ class _HomeState extends State<Home> {
                 List<Widget> widgetList;
 
                 if (snapshot.hasData) {
-                  widgetList = dnsZoneTiles(snapshot);
+                  widgetList = dnsRecordTiles();
 
                   widgetList.add(Container(
                       padding: const EdgeInsets.fromLTRB(30, 20, 30, 10)));
@@ -81,47 +91,24 @@ class _HomeState extends State<Home> {
             ),
           ),
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: _incrementCounter,
-          tooltip: 'Increment',
-          child: const Icon(Icons.add),
-        ),
       ),
     );
   }
 }
 
-tokenDefined() async {
 
-  if (await sotoreSecureData.getData("token") != null) {
-    return true;
-  } else {
-    return false;
-  }
-}
-
-dnsZoneTiles(snapshot) {
+dnsRecordTiles() {
   List<Widget> widgetList = <Widget>[];
 
-  for (var item in snapshot.data) {
+  for (DnsRecordsModel item in activeZoneModel.dnsRecords) {
     widgetList.add(
       ListTile(
+        leading: Text(item.type),
         title: Text(item.name),
-        leading: Icon(
-          Icons.dns,
-          size: 20.0,
-          color: iconColor(item.status),
-        ),
-        onTap: () async {
-          // Navigator.pushReplacementNamed(
-          //     context, pageRoutes.home);
-          dynamic result =
-              await httpRequest.getList(cloudflareUrls.dnsRecords(item.id));
-          print(result);
-          for (var element in result['result']) {
-            print(element.toString());
-          }
-        },
+        subtitle: (item.type == 'MX')
+            ? Text("${item.priority} ${item.content}")
+            : Text(item.content),
+        onTap: () async {},
       ),
     );
   }
@@ -129,13 +116,13 @@ dnsZoneTiles(snapshot) {
   if (widgetList.isEmpty) {
     return [
       const Icon(
-        Icons.error_outline,
+        Icons.forward,
         color: Colors.red,
         size: 60,
       ),
       const Padding(
         padding: EdgeInsets.only(top: 16),
-        child: Text('Not exist any DNS Zone Records'),
+        child: Text('Not exist any Records for this DNS Zone'),
       )
     ];
   } else {
@@ -143,31 +130,11 @@ dnsZoneTiles(snapshot) {
   }
 }
 
-// SafeArea(
-//       child: Scaffold(
-//         appBar: AppBar(
-//           title: Text(title),
-//         ),
-//         drawer: cloudflareDrawer(),
-//         body: ,
-//       ),
-//     );
-
 Future getProjectDetails() async {
-  cloudflareZones.zones = [];
   if (await tokenDefined()) {
-    List<ZonesModel> zones = await cloudflareZones.getZones();
-    return zones;
+    return true;
   } else {
     // Return empty Dns Zone list
-    return cloudflareZones.zones;
-  }
-}
-
-iconColor(text) {
-  if (text == "active") {
-    return Color.fromARGB(255, 223, 141, 49);
-  } else {
-    return Color.fromARGB(255, 156, 143, 127);
+    return false;
   }
 }
