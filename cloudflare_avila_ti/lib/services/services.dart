@@ -17,8 +17,15 @@ Endpoints cloudflareUrls = Endpoints();
 // Pages
 PageRoutes pageRoutes = PageRoutes();
 
+
+
+
 // Colors
 CloudflareColors cloudflareColors = CloudflareColors();
+
+// Messages
+SnackBarMessages snackBarMessages = SnackBarMessages();
+
 
 
 // Active Zone DNS
